@@ -21,86 +21,78 @@
 <body>
     <header class="container-fluid navbar-light bg-light">
         <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-            <div class="container">
+            <div class="container d-flex justify-content-between align-items-center">
+                <!-- Brand -->
                 <a class="navbar-brand font-weight-bold" href="{% url 'second' %}">
                     <i class="fa-solid fa-store text-primary"></i> MyShop
                 </a>
-                <button
-                    class="navbar-toggler"
-                    type="button"
-                    data-toggle="collapse"
-                    data-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation"
-                >
+        
+                <!-- Toggle Button for Mobile -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-    
+        
+                <!-- Navbar Content -->
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item"><a class="nav-link" href="{% url 'second' %}">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#"></a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'order_history' %}">Orders</a></li>
-    
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item mx-2"><a class="nav-link" href="{% url 'second' %}">Home</a></li>
+                        <li class="nav-item mx-2"><a class="nav-link" href="{% url 'order_history' %}">Orders</a></li>
+        
                         {% if session %}
-                        <li class="nav-item">
+                        <li class="nav-item mx-2">
                             <a class="nav-link text-danger font-weight-bold" href="{% url 'logout' %}">Logout</a>
                         </li>
                         {% else %}
-                        <li class="nav-item">
+                        <li class="nav-item mx-2">
                             <a class="nav-link text-success font-weight-bold" href="{% url 'login' %}">Login</a>
                         </li>
                         {% endif %}
-    
+        
                         <!-- Products Dropdown -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button">
-                                <i class="fa-solid fa-box text-dark"></i> Products
+                        <li class="nav-item dropdown mx-2">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown">
+                                Products
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{% url 'add_product' %}">Add Product</a>
-                                <a class="dropdown-item" href="{% url 'product_list' %}">Product List</a>
-                            </div>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'add_product' %}">Add Product</a></li>
+                                <li><a class="dropdown-item" href="{% url 'product_list' %}">Product List</a></li>
+                            </ul>
                         </li>
-    
-                        <!-- Search Box -->
-                        <li class="nav-item mx-3 d-flex align-items-center position-relative">
-                            <form class="form-inline w-100" action="{% url 'product_search' %}" method="POST">
-                                {% csrf_token %}
-                                <div class="input-group">
-                                    <input
-                                        class="form-control"
-                                        name="q"
-                                        type="text"
-                                        placeholder="Search products..."
-                                        aria-label="Search"
-                                        required
-                                    />
-                                    <div class="input-group-append">
-                                        <button type="submit" class="btn btn-outline-primary">
-                                            <i class="fa fa-search"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        </li>
-    
-                        <li class="nav-item">
+        
+                        <!-- Cart & Profile Icons -->
+                        <li class="nav-item mx-2">
                             <a class="nav-link" href="{% url 'cartdata' %}">
-                                <i class="fa fa-shopping-cart text-dark"></i>
+                                <i class="fa fa-shopping-cart text-dark fs-5"></i>
                             </a>
                         </li>
-    
-                        <li class="nav-item">
+        
+                        <li class="nav-item mx-2">
                             <a class="nav-link" href="{% url 'profile' %}">
-                                <i class="far fa-user text-dark"></i>
+                                <i class="far fa-user text-dark fs-5"></i>
                             </a>
                         </li>
+        
+                        <!-- Search Box (Properly Aligned) -->
+                        
                     </ul>
                 </div>
             </div>
+            <li class="nav-item mx-3 d-flex align-items-center">
+                <form class="form-inline w-100" action="{% url 'product_search' %}" method="GET"> 
+                    <div class="input-group">
+                        <input class="form-control" name="q" type="text" placeholder="Search products..." aria-label="Search" required />
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+                
+            </li>
         </nav>
+        
+        
     </header>
     
 

@@ -25,5 +25,8 @@ urlpatterns = [
     path("create-superuser/", create_superuser),
     path("run-migrations/", run_migrations),  # New route
     path("check-session/", check_session),
+    path('test-media/', test_media, name='test_media'),
+
+
 
 ]

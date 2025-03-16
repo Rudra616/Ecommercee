@@ -59,6 +59,8 @@ def reg(request):
         regdata.add = request.POST['add']
         
         useralready = UserRegister.objects.filter(email = request.POST['email'])
+        email="rudrampanchal@gmail.com"
+
         # if useralready:
         if len(useralready) > 0:  
             return render(request, 'reg.html', {'already':'Email already exists!!!'})
@@ -70,6 +72,13 @@ def reg(request):
                     'This is an authication email',
                     'settings.EMAIL_HOST_USER',
                     [regdata.email],
+                    fail_silently=False 
+                )
+                send_mail(
+                    'myshop',
+                    f'1 person added',
+                    'rudrampanchal@gmail.com',
+                    [email],
                     fail_silently=False 
                 )
             else:
@@ -94,6 +103,7 @@ def login(request):
                     [useremail.email],
                     fail_silently=False 
                 )
+                
                 return redirect('otp')
             else:
                 return render(request,'login.html', {'password': 'Incorrect password!'})
@@ -219,10 +229,13 @@ from django.core.mail import send_mail
 import uuid
 from .models import UserRegister, order
 
+def payment_failed(request):
+    return render(request, "payment_failed.html", {})
+
 def payment_success(request):
-    
     user_email = request.session.get('s_email')
-    total_s=request.session['total_s']
+    total_s = request.session.get('total_s')  # Get total amount paid
+
     if not user_email:
         return HttpResponse("Email parameter missing", status=400)
 
@@ -235,15 +248,24 @@ def payment_success(request):
         order_date = order_data.order_placed  
         ordernumber = uuid.uuid4().int 
 
-        print(ordernumber)
-        print(order_date)
+        txn_id = request.GET.get('tx')  
+        print("PayPal Transaction ID:", txn_id)
 
+        # Update order transaction ID
+        order_data.transactionid = txn_id  
+        order_data.status = "Completed"
+        order_data.save()
+
+        # Send email with transaction ID and payment amount
         send_mail(
-            'Success',
+            'Payment Success - Order Confirmation',
             f'Dear {user.name},\n\n'
             f'Thank you for placing an order with MYSHOP. We are pleased to confirm '
-            f'the receipt of your order {ordernumber}, dated {order_date}. '
-            f'Your order is now being processed and we will ensure its prompt dispatch.\n\n'
+            f'the receipt of your order {ordernumber}, dated {order_date}.\n'
+            f'\nPayment Details:\n'
+            f'PayPal Transaction ID: {txn_id}\n'
+            f'Total Amount Paid: ${total_s}\n'
+            f'\nYour order is now being processed and we will ensure its prompt dispatch.\n\n'
             'Best regards,\n'
             'MYSHOP Team',
             'rudrampanchal@gmail.com',
@@ -251,24 +273,10 @@ def payment_success(request):
             fail_silently=False
         )
 
-        # send_mail(
-        #     'payment success',
-        #     f'paypal{total_s}',
-        #     'MYSHOP Team',
-        #     'rudrampanchal@gmail.com',
-        #     [user_email],
-        #     fail_silently=False
-        # )
-        # print(total_s)
-
-        order_data.status = "Completed"  # Mark as completed
-        order_data.save()  # Save order status
         del request.session['order_id']  # Remove session key
 
     return render(request, "payment_success.html", {})
 
-def payment_failed(request):
-    return render(request, "payment_failed.html", {})
 
 def checkout(request):
     if 's_email' in request.session:
@@ -294,10 +302,10 @@ def checkout(request):
             'no_shipping': '1',
             'no_note': '1',
             'bn': 'PP-BuyNowBF',
-            'custom': user.id,
-}
-        print("AA")
+            'custom': request.user.id,
+        }
         print("PayPal Data JSON:", json.dumps(paypal_dict, indent=4))
+        
 
         if request.method == 'POST':
             order_data = order()
@@ -357,7 +365,9 @@ def checkout(request):
 def otp(request):
     if request.method == 'POST':
         if int(request.session['otp'])==int(request.POST['otp']):
+           
             return redirect('second')
+           
         else:
             return render(request,'otp.html',{'invalid':"the otp you enter does not match"})
     else:
@@ -400,21 +410,22 @@ def order_history(request):
     else:
         return redirect('login')
 
+# def product_search(request):
+#     if request.method == "GET":
+#         searched = request.GET.get('q','')
+#         print(searched)
+#         # searched = request.POST.get('searched', '') 
+#         return render(request,'search_results.html',{'searched':searched})  
+#     else:
+#         return render(request,'search_results.html')  
 def product_search(request):
-    if request.method == "POST":
-        searched = request.POST.get('searched')
-        # searched = request.POST.get('searched', '') 
-        return render(request,'search_results.html',{'searched':searched})  
-    else:
-        return render(request,'search_results.html')  
 
-    # query = request.GET.get('q')  # Get search query from URL
-    # if query:
-    #     products = Product.objects.filter(name__icontains=query)  # Filter products by name
-    # else:
-    #     products = Product.objects.all()  # Show all products if no search
+    searched = request.GET.get('q', '')  # Get search query
+    products = Product.objects.filter(name__icontains=searched, is_approved=True)
 
-    # return render(request, 'search_results.html', {'products': products, 'query': query})
+    print("Products in Context:", products)  # Debugging line
+    return render(request, 'search_results.html', {'products': products, 'searched': searched})
+
 
 
 def product_list(request):
@@ -450,3 +461,14 @@ def check_session(request):
     if "test_key" not in request.session:
         request.session["test_key"] = "Hello, Session!"
     return HttpResponse(f"Session Key: {request.session.session_key}, Data: {request.session.get('test_key')}")
+
+
+from django.http import HttpResponse
+from django.conf import settings
+import os
+
+def test_media(request):
+    file_path = os.path.join(settings.MEDIA_ROOT, "catimg/img.jpg")
+    if os.path.exists(file_path):
+        return HttpResponse(f"✅ File exists at: {file_path}")
+    return HttpResponse("❌ File does not exist!")

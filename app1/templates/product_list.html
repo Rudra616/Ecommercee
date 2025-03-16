@@ -66,6 +66,8 @@
         {% empty %}
         <p>No products available.</p>
         {% endfor %}
+        {% include 'search_results.html' with products=products searched=searched %}
+
     </div>
 </body>
 </html>

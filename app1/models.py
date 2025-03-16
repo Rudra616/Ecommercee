@@ -14,7 +14,7 @@ class UserRegister(models.Model):
     
 class Category(models.Model):
     catname = models.CharField(max_length=80)
-    image = models.ImageField(upload_to='catimg')
+    image = models.ImageField(upload_to='catimg/')
     def __str__(self):
         return self.catname
 class Product(models.Model):
@@ -46,7 +46,7 @@ class order(models.Model):  # ✅ Capitalized "Order" for consistency
     qty = models.CharField(max_length=6, default='Pending')
     totalprice = models.CharField(max_length=50, default='Pending')
     paytype = models.CharField(max_length=20, default='cash')
-    transactionid = models.CharField(max_length=50, default='Pending')
+    transactionid = models.CharField(max_length=50, null=True, blank=True, default='Pending')
     order_placed = models.DateTimeField(auto_now_add=True)
     order_complited = models.DateTimeField(null=True, blank=True)
     def __str__(self):
