@@ -13,19 +13,16 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            padding-top: 60px;
+            padding-top: 100px; /* Increased padding to prevent overlap */
+            padding-bottom: 40px;
             color: white; /* Sets text color for better contrast */
         }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background-color: #f4f4f4;
-            padding: 20px;
         }
 
         .cart-container {
@@ -42,13 +39,14 @@
 
         .cart-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             background: #28a745;
             color: white;
-            padding: 15px;
+            padding: 20px;
             border-radius: 5px;
             text-align: center;
+            margin-bottom: 20px; /* Added spacing below header */
         }
 
         .cart-item {
@@ -158,7 +156,7 @@
 </head>
 <body>
     <div class="cart-header">
-        <h2>Shopping Cart</h2>
+        <h1>Shopping Cart</h1>
     </div>
 
     {% for i in prolist %}

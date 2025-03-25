@@ -9,9 +9,9 @@
 
     <!-- Icons font CSS-->
     <link href={% static "vendor/mdi-font/css/material-design-iconic-font.min.css" %} rel="stylesheet" media="all">
-    <link href= {% static "vendor/font-awesome-4.7/css/font-awesome.min.css" %} rel="stylesheet" media="all">
+    <link href={% static "vendor/font-awesome-4.7/css/font-awesome.min.css" %} rel="stylesheet" media="all">
     <!-- Font special for pages-->
-    <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,900" rel="stylesheet">
 
     <!-- Vendor CSS-->
     <link href={% static "vendor/select2/select2.min.css" %} rel="stylesheet" media="all">
@@ -19,63 +19,72 @@
 
     <!-- Main CSS-->
     <link href={% static "css/main.css" %} rel="stylesheet" media="all">
+
+    <style>
+        /* Add background image for the OTP page */
+        body {
+            background-image: url('{% static "images/ecommerce-bg.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5); /* Dark overlay for better contrast */
+        }
+
+        .wrapper {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 </head>
 
 <body>
-    <div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins">
+    <div class="page-wrapper">
         <div class="wrapper wrapper--w680">
             <div class="card card-4">
                 <div class="card-body">
-                    <h2 class="title">Login Form</h2>
+                    <h2 class="title">OTP Verification</h2>
                     <form method="POST">
-                    {% csrf_token %}
+                        {% csrf_token %}
                         <div class="row row-space">
                             <div class="col-2">
                                 <div class="input-group">
-                                    <label class="label">otp</label>
-                                    <input class="input--style-4" type="number" name="otp">
+                                    <label class="label">Enter OTP</label>
+                                    <input class="input--style-4" type="number" name="otp" required>
                                 </div>
                             </div>
                         </div>
-                       {% comment %}  <div class="row row-space">
-                            <div class="col-2">
-                                    <div class="input-group">
-                                        <label class="label">Password</label>
-                                        <input class="input--style-4" type="password" name="password">
-                                </div>
-                            </div>
-                        </div> {% endcomment %}
                         {% if invalid %}
-                        <h5 style="color: red;">{{invalid}}</h5>
+                        <h5 style="color: red;">{{ invalid }}</h5>
                         {% endif %}
                         <div class="p-t-15">
                             <button class="btn btn--radius-2 btn--blue" type="submit">Submit</button>
-                        </div><br><br>
-                            <a href={% url "reg" %}>Not a member? Register.
+                        </div>
+                        <br><br>
+                        <a href={% url "reg" %}>Not a member? Register.</a>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- Jquery JS-->
     <script src={% static "vendor/jquery/jquery.min.js" %}></script>
     <!-- Vendor JS-->
-    <script src= {% static "vendor/select2/select2.min.js" %}></script>
-    <script src= {% static "vendor/datepicker/moment.min.js" %}></script>
-    <script src= {% static "vendor/datepicker/daterangepicker.js" %}></script>
+    <script src={% static "vendor/select2/select2.min.js" %}></script>
+    <script src={% static "vendor/datepicker/moment.min.js" %}></script>
+    <script src={% static "vendor/datepicker/daterangepicker.js" %}></script>
 
     <!-- Main JS-->
-    <script src= {% static "js/global.js" %}></script>
-    {% comment %} {% if password %}
-        <script>
-            alert('{{password}}')
-        </script>
-    {% endif %}
-    {% if logout %}
-    <script>
-        alert('{{logout}}')
-    </script>
-    {% endif %} {% endcomment %}
-
+    <script src={% static "js/global.js" %}></script>
 </body>
 </html>

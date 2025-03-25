@@ -50,49 +50,62 @@ def add_product(request):
 from django.core.mail import send_mail
 from django.conf import settings
 
+from django.shortcuts import render
+from django.core.mail import send_mail
+from .models import UserRegister
+
 def reg(request):
     if request.method == 'POST':
-        regdata = UserRegister()
-        regdata.name = request.POST['name']
-        regdata.password = request.POST['password']
-        regdata.email = request.POST['email']
-        regdata.mob = request.POST['phone']
-        regdata.add = request.POST['add']
-        
-        useralready = UserRegister.objects.filter(email=request.POST['email'])
-        admin_email = "rudrampanchal@gmail.com"
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        address = request.POST.get('add')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('Confirmpassword')
 
         # Check if email already exists
-        if useralready.exists():
+        if UserRegister.objects.filter(email=email).exists():
             return render(request, 'reg.html', {'already': 'Email already exists!!!'})
 
         # Check if passwords match
-        if request.POST['password'] != request.POST['Confirmpassword']:
+        if password != confirm_password:
             return render(request, 'reg.html', {'cp': 'Passwords do not match! Try again.'})
 
-        # Save new user
-        regdata.save()
-
-        # Send emails
-        send_mail(
-            'Welcome to Our Website!',
-            'This is an authentication email.',
-            'settings.EMAIL_HOST_USER',
-            [regdata.email],
-            fail_silently=False 
+        # Save user
+        user = UserRegister.objects.create(
+            name=name,
+            email=email,
+            mob=phone,
+            add=address,
+            password=password  # Consider hashing this!
         )
 
-        send_mail(
-            'New User Registration',
-            f'1 new person registered: {regdata.email}',
-            'rudrampanchal@gmail.com',
-            [admin_email],
-            fail_silently=False 
-        )
+        # Send email notifications
+        admin_email = "rudrampanchal@gmail.com"
+
+        try:
+            send_mail(
+                'Welcome to Our Website!',
+                'This is an authentication email.',
+                'settings.EMAIL_HOST_USER',
+                [user.email],
+                fail_silently=False
+            )
+
+            send_mail(
+                'New User Registration',
+                f'1 new person registered: {user.email}',
+                'settings.EMAIL_HOST_USER',
+                [admin_email],
+                fail_silently=False
+            )
+        except Exception as e:
+            return render(request, 'reg.html', {'email_error': 'Email not sent. Check server settings.'})
 
         return render(request, 'reg.html', {'store': 'Data has been entered successfully!'})
-    
+
     return render(request, 'reg.html')
+
 import random
 def login(request):
     if request.method == 'POST':

@@ -84,8 +84,8 @@
     <div class="container">
         <div class="card">
             <h2 class="title">Register</h2>
-
-                    {% csrf_token %}
+            <form method="POST">
+                {% csrf_token %}
                 <div class="input-group">
                     <label>Name</label>
                     <input class="input--style-4" type="text" name="name" required>
@@ -115,6 +115,7 @@
                     <p>Already a member? <a href="{% url 'login' %}">Login</a></p>
                 </div>
             </form>
+            
         </div>
     </div>
 
