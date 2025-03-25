@@ -49,6 +49,7 @@ def add_product(request):
 # Create your views here.
 from django.core.mail import send_mail
 from django.conf import settings
+
 def reg(request):
     if request.method == 'POST':
         regdata = UserRegister()
@@ -58,60 +59,70 @@ def reg(request):
         regdata.mob = request.POST['phone']
         regdata.add = request.POST['add']
         
-        useralready = UserRegister.objects.filter(email = request.POST['email'])
-        email="rudrampanchal@gmail.com"
+        useralready = UserRegister.objects.filter(email=request.POST['email'])
+        admin_email = "rudrampanchal@gmail.com"
 
-        # if useralready:
-        if len(useralready) > 0:  
-            return render(request, 'reg.html', {'already':'Email already exists!!!'})
-        else:
-            if request.POST['password']==request.POST['Confirmpassword']:
-                regdata.save()
-                send_mail(
-                    'welcome message from our website',
-                    'This is an authication email',
-                    'settings.EMAIL_HOST_USER',
-                    [regdata.email],
-                    fail_silently=False 
-                )
-                send_mail(
-                    'myshop',
-                    f'1 person added',
-                    'rudrampanchal@gmail.com',
-                    [email],
-                    fail_silently=False 
-                )
-            else:
-                return render(request, 'reg.html', {'cp':'try again'})
+        # Check if email already exists
+        if useralready.exists():
+            return render(request, 'reg.html', {'already': 'Email already exists!!!'})
 
-        return render(request, 'reg.html', {'store':'Data has been entered successfully!'})
-    else:
-        return render(request, 'reg.html')
+        # Check if passwords match
+        if request.POST['password'] != request.POST['Confirmpassword']:
+            return render(request, 'reg.html', {'cp': 'Passwords do not match! Try again.'})
+
+        # Save new user
+        regdata.save()
+
+        # Send emails
+        send_mail(
+            'Welcome to Our Website!',
+            'This is an authentication email.',
+            'settings.EMAIL_HOST_USER',
+            [regdata.email],
+            fail_silently=False 
+        )
+
+        send_mail(
+            'New User Registration',
+            f'1 new person registered: {regdata.email}',
+            'rudrampanchal@gmail.com',
+            [admin_email],
+            fail_silently=False 
+        )
+
+        return render(request, 'reg.html', {'store': 'Data has been entered successfully!'})
+    
+    return render(request, 'reg.html')
 import random
 def login(request):
     if request.method == 'POST':
+        email = request.POST['email']
+        password = request.POST['password']
+
         try:
-            useremail = UserRegister.objects.get(email = request.POST['email'])
-            if useremail.password.strip() == request.POST['password'].strip():
-                request.session['s_email'] = useremail.email
-                otp =random.randint(100000,999999)
-                request.session['otp']=otp
+            user = UserRegister.objects.get(email=email)
+            
+            if user.password.strip() == password.strip():
+                request.session['s_email'] = user.email
+                otp = random.randint(100000, 999999)
+                request.session['otp'] = otp
+
                 send_mail(
-                    'welcome',
-                    f'Your OTP for login of ecommerce is {otp}',
+                    'Welcome',
+                    f'Your OTP for login is {otp}',
                     'rudrampanchal@gmail.com',
-                    [useremail.email],
-                    fail_silently=False 
+                    [user.email],
+                    fail_silently=False
                 )
-                
+
                 return redirect('otp')
             else:
-                return render(request,'login.html', {'password': 'Incorrect password!'})
-
-        except:
-            return render(request,'login.html', {'email': 'Email does not exist!'})    
-    else:
-        return render(request, 'login.html')
+                return render(request, 'login.html', {'password': 'Incorrect password!'})
+        
+        except UserRegister.DoesNotExist:
+            return render(request, 'login.html', {'email': 'Email does not exist!'})
+    
+    return render(request, 'login.html')
     
     
 def logout(request):
