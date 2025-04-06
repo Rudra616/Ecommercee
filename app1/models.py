@@ -25,6 +25,7 @@ class Product(models.Model):
     STOCK = models.PositiveSmallIntegerField()
     Category = models.ForeignKey(Category,on_delete=models.CASCADE)
     is_approved = models.BooleanField(default=False)  # Admin approval required
+    seller_email = models.EmailField(null=True, blank=True)  # Allow null values for migration
 
    
     def __str__(self):

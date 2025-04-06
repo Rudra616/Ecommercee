@@ -105,31 +105,28 @@
     </style>
 
 </head>
-<body>
-
+<body
     <div class="content-wrapper">
         <div id="myCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="2000">
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <img src="{% static 'imgs/img1.webp' %}" class="d-block w-100" alt="First Slide">
+                    <img src="{% static 'imgs/img1.webp' %}" class="d-block w-100" alt="First Slide" loading="lazy">
                 </div>
                 <div class="carousel-item">
-                    <img src="{% static 'imgs/img2.webp' %}" class="d-block w-100" alt="Second Slide">
+                    <img src="{% static 'imgs/img2.webp' %}" class="d-block w-100" alt="Second Slide" loading="lazy">
                 </div>
                 <div class="carousel-item">
-                    <img src="{% static 'imgs/img3.webp' %}" class="d-block w-100" alt="Third Slide">
+                    <img src="{% static 'imgs/img3.webp' %}" class="d-block w-100" alt="Third Slide" loading="lazy">
                 </div>
             </div>
-
             <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon"></span>
             </button>
-
             <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
                 <span class="carousel-control-next-icon"></span>
             </button>
         </div>
-
+    
         <section class="container my-5">
             <div class="row">
                 <div class="col-md-4">
@@ -155,7 +152,7 @@
                 </div>
             </div>
         </section>
-
+    
         <section class="container">
             <h3 class="text-center mb-4">Shop by Category</h3>
             <div class="row">
@@ -163,10 +160,10 @@
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-4">
                     <div class="card category-card">
                         <a href="{% url 'catpro' i.id %}">
-                            <img class="card-img-top" src="{{ i.image.url }}" alt="{{ i.catname }}">
+                            <img class="card-img-top" src="{{ i.image.url }}" alt="{{ i.catname }}" loading="lazy">
                         </a>
-                        <div class="card-body">
-                            <p class="card-text">{{ i.catname }}</p>
+                        <div class="card-body text-center fw-bold">
+                            {{ i.catname }}
                         </div>
                     </div>
                 </div>
@@ -174,27 +171,35 @@
             </div>
         </section>
     </div>
-
+    
+    <!-- Toast for messages -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
+        <div id="toastMsg" class="toast bg-dark text-white" role="alert" data-bs-delay="5000">
+            <div class="toast-body"></div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toastEl = document.querySelector("#toastMsg");
+            const toastBody = toastEl.querySelector(".toast-body");
+            {% if sus %}
+                toastBody.textContent = "{{ sus }}";
+                new bootstrap.Toast(toastEl).show();
+            {% elif store %}
+                toastBody.textContent = "{{ store }}";
+                new bootstrap.Toast(toastEl).show();
+            {% elif already %}
+                toastBody.textContent = "{{ already }}";
+                new bootstrap.Toast(toastEl).show();
+            {% endif %}
+        });
+    </script>
+    
     {% include "footer.html" %}
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    {% if sus %}
-    <script>
-        alert('{{ sus }}');
-    </script>
-    {% endif %}
-    {% if store %}
-    <script>
-        alert('{{ store }}');
-    </script>
-    {% endif %}
-    {% if already %}
-    <script>
-        alert('{{ already }}');
-    </script>
-    {% endif %}
+    {% endblock %}
+    
 
 </body>
 </html>
-{% endblock %}
+

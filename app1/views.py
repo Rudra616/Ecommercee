@@ -208,9 +208,9 @@ def products(request, id):
                     'already': 'Already in cart'
                 })
 
-            # Add to cart
             cartdata = cart()
             cartdata.productid = prodata.pk
+            # Add to cart
             cartdata.userid = logindetails.pk
             cartdata.qty = requested_qty
             cartdata.totalprice = int(prodata.price) * requested_qty
@@ -453,9 +453,12 @@ def product_search(request):
 
 
 def product_list(request):
-    products = Product.objects.filter(is_approved=True)  # Show only approved products
-    return render(request, "product_list.html", {"products": products})
-
+    if 's_email' in request.session:  # Checking if seller is logged in
+        seller_email = request.session['s_email']  # Get seller's email
+        products = Product.objects.filter(is_approved=True, seller_email=seller_email)  # Filter products by email
+        return render(request, "product_list.html", {"products": products})
+    else:
+        return redirect('login')
 from django.http import JsonResponse
 
 def debug_request(request):
